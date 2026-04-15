@@ -527,8 +527,10 @@
   - 플레이어 2 (파랑): #3498DB
   - 플레이어 3 (초록): #2ECC71
   - 플레이어 4 (노랑): #F1C40F
-- **폰트**: 본문 Pretendard, 강조/타이틀에 전통 느낌의 둥근 서체 (Cafe24 감사해 등)
-- **아이콘**: 선(line) 스타일, 2px 두께, 둥근 끝처리
+- **폰트**: **SF Pro Rounded** 전용 (Regular/Medium/Semibold/Bold). iOS 순정 느낌 극대화.
+- **아이콘**: SF Symbols 우선 사용. iOS 네이티브 일관성 유지.
+- **디자인 원칙**: Apple Human Interface Guidelines 추종. 순정같은 깔끔한 UI.
+- **디자인 검증**: [impeccable](https://github.com/pbakaus/impeccable) 도구로 디자인 크리틱 수행
 
 ### F2. 필요 에셋 목록 (우선순위)
 
