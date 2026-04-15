@@ -1,0 +1,50 @@
+{
+  "app": { "title": "Yut Nori" },
+  "lobby": {
+    "quickMatch": "Quick Match",
+    "createRoom": "Create Room",
+    "aiGame": "AI Game",
+    "settings": "Settings",
+    "leaderboard": "Leaderboard",
+    "profile": "Profile"
+  },
+  "game": {
+    "throw": "Throw",
+    "yourTurn": "Your Turn!",
+    "opponentTurn": "Opponent's Turn",
+    "waiting": "Waiting...",
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "classic": "Classic",
+    "skill": "Skill"
+  },
+  "chat": {
+    "sorry": "Sorry",
+    "wellDone": "Well done",
+    "hurry": "Hurry up",
+    "arrived": "I'm here"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "sound": "Sound",
+    "subscription": "Subscription",
+    "gaugeMode": "Gauge Mode"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global",
+    "friends": "Friends",
+    "wins": "Wins",
+    "winRate": "Win Rate"
+  },
+  "match": {
+    "finding": "Finding opponent...",
+    "cancel": "Cancel",
+    "roomCode": "Room Code",
+    "join": "Join",
+    "create": "Create",
+    "mode1v1": "1 vs 1",
+    "mode2v2": "2 vs 2"
+  }
+}

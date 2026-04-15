@@ -48,7 +48,7 @@
       "id": "US-004",
       "title": "클라이언트: 로비 + 네비게이션 기본 구조",
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "expo-router로 /(로비), /game, /settings, /leaderboard, /profile 라우팅 동작",
         "로비 화면: 빠른 매칭, 방 만들기, AI 대전 버튼 표시",
@@ -62,7 +62,7 @@
       "id": "US-005",
       "title": "게임 화면: 윷판 렌더링 + 말 표시",
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "react-native-skia Canvas로 전통 윷판(십자형) 렌더링",
         "29개 노드 위치에 원형 칸 표시",

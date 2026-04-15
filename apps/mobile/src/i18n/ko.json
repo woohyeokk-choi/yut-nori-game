@@ -1,0 +1,50 @@
+{
+  "app": { "title": "윷놀이" },
+  "lobby": {
+    "quickMatch": "빠른 매칭",
+    "createRoom": "방 만들기",
+    "aiGame": "AI 대전",
+    "settings": "설정",
+    "leaderboard": "리더보드",
+    "profile": "프로필"
+  },
+  "game": {
+    "throw": "던지기",
+    "yourTurn": "내 차례!",
+    "opponentTurn": "상대 차례",
+    "waiting": "대기 중...",
+    "victory": "승리!",
+    "defeat": "패배",
+    "classic": "클래식",
+    "skill": "스킬"
+  },
+  "chat": {
+    "sorry": "미안해요",
+    "wellDone": "잘했어요",
+    "hurry": "빨리 주세요",
+    "arrived": "왔어요"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "sound": "소리",
+    "subscription": "구독 관리",
+    "gaugeMode": "게이지 모드"
+  },
+  "leaderboard": {
+    "title": "리더보드",
+    "global": "글로벌",
+    "friends": "친구",
+    "wins": "승",
+    "winRate": "승률"
+  },
+  "match": {
+    "finding": "상대를 찾는 중...",
+    "cancel": "취소",
+    "roomCode": "방 코드",
+    "join": "참여",
+    "create": "만들기",
+    "mode1v1": "1대1",
+    "mode2v2": "2대2"
+  }
+}

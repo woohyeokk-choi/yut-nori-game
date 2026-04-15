@@ -1,0 +1,50 @@
+{
+  "app": { "title": "ユンノリ" },
+  "lobby": {
+    "quickMatch": "クイックマッチ",
+    "createRoom": "部屋を作る",
+    "aiGame": "AI対戦",
+    "settings": "設定",
+    "leaderboard": "リーダーボード",
+    "profile": "プロフィール"
+  },
+  "game": {
+    "throw": "投げる",
+    "yourTurn": "あなたの番！",
+    "opponentTurn": "相手の番",
+    "waiting": "待機中...",
+    "victory": "勝利！",
+    "defeat": "敗北",
+    "classic": "クラシック",
+    "skill": "スキル"
+  },
+  "chat": {
+    "sorry": "ごめんなさい",
+    "wellDone": "よくやった",
+    "hurry": "早くして",
+    "arrived": "来たよ"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "sound": "サウンド",
+    "subscription": "サブスクリプション",
+    "gaugeMode": "ゲージモード"
+  },
+  "leaderboard": {
+    "title": "リーダーボード",
+    "global": "グローバル",
+    "friends": "フレンド",
+    "wins": "勝",
+    "winRate": "勝率"
+  },
+  "match": {
+    "finding": "対戦相手を探しています...",
+    "cancel": "キャンセル",
+    "roomCode": "ルームコード",
+    "join": "参加",
+    "create": "作成",
+    "mode1v1": "1対1",
+    "mode2v2": "2対2"
+  }
+}
