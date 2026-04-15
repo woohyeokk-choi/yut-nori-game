@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"/Users/delightroom/Programming/yut-nori-game/docs/IMPLEMENTATION_PLAN.md\"}",
+  "error": "File content (61597 tokens) exceeds maximum allowed tokens (10000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
+  "timestamp": "2026-04-15T17:40:13.315Z",
+  "retry_count": 2
+}

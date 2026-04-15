@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "윷놀이",
+    "slug": "yut-nori",
+    "version": "0.0.1",
+    "scheme": "yutnori",
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"]
+  }
+}

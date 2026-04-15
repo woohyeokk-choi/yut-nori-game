@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd /Users/delightroom/Programming/yut-nori-game && pnpm -F @yut-nori/shared build 2>&1 && cd apps/server && npx tsx src/index.ts &\\nSERVER_PID=$!\\nsleep 4\\ncurl -s http://localhost:2567/ 2...",
+  "error": "Exit code 1\n\n> @yut-nori/shared@0.0.1 build /Users/delightroom/Programming/yut-nori-game/packages/shared\n> tsc\n\n/Users/delightroom/Programming/yut-nori-game/node_modules/.pnpm/@colyseus+schema@2.0.37/node_modules/@colyseus/schema/src/annotations.ts:200\n        const constructor = target.constructor as typeof Schema;\n                                   ^\n\n\nTypeError: Cannot read properties of undefined (reading 'constructor')\n    at <anonymous> (/Users/delightroom/Programming/yut-nori-game/node_mo...",
+  "timestamp": "2026-04-15T18:08:47.451Z",
+  "retry_count": 2
+}

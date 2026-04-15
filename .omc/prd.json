@@ -1,0 +1,151 @@
+{
+  "title": "윷놀이 게임 Phase 1 풀 구현",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "모노레포 프로젝트 초기화",
+      "priority": 1,
+      "passes": true,
+      "acceptanceCriteria": [
+        "pnpm workspace로 apps/mobile, apps/server, packages/shared 3개 패키지 구성",
+        "packages/shared에서 TypeScript 빌드 후 apps/mobile과 apps/server에서 import 가능",
+        "apps/mobile: Expo Dev Client 프로젝트 (expo-router 포함) 생성, npx expo start --web으로 브라우저 실행 가능",
+        "apps/server: Colyseus TypeScript 서버 프로젝트 생성, npm run dev로 서버 실행 가능",
+        "turbo.json의 tasks 설정으로 turbo run build/dev/typecheck 동작"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "shared 패키지: 게임 로직 코어",
+      "priority": 2,
+      "passes": true,
+      "acceptanceCriteria": [
+        "BoardGraph 클래스: 29개 노드 + 지름길 경로가 정확히 정의됨",
+        "PathCalculator: calculatePath(from, yutResult, isShortcut)가 올바른 도착 노드 반환",
+        "PathCalculator: 백도(backdo) 시 이전 노드로 이동, 0번에서 백도 시 출발점(-1) 반환",
+        "PathCalculator: 지름길 분기점(5,10,22번 노드)에서 지름길 진입 가능",
+        "YutProbability: getResult(gaugeZone)가 확률 테이블에 따라 결과 반환 (도/개/걸/윷/모/백도)",
+        "WinCondition: checkWin(mals)이 모든 말 골인 시 true 반환",
+        "TypeScript 빌드 에러 없음"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Colyseus 게임 서버: Room + Schema",
+      "priority": 3,
+      "passes": true,
+      "acceptanceCriteria": [
+        "YutGameRoom 클래스: onCreate, onJoin, onLeave 메서드 구현",
+        "GameState Schema: phase, currentTurn, turnTimer, yutResult, extraTurns, players 필드",
+        "PlayerState Schema: userId, userName, team, mals(MalState 배열)",
+        "MalState Schema: position, isStacked, stackedWith",
+        "메시지 핸들러: throw_yut, move_mal, send_message 처리",
+        "TurnManager: 30초 턴 타이머, 시간 초과 시 자동 던지기/이동",
+        "서버 시작 시 http://localhost:2567에서 접속 가능"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "클라이언트: 로비 + 네비게이션 기본 구조",
+      "priority": 4,
+      "passes": false,
+      "acceptanceCriteria": [
+        "expo-router로 /(로비), /game, /settings, /leaderboard, /profile 라우팅 동작",
+        "로비 화면: 빠른 매칭, 방 만들기, AI 대전 버튼 표시",
+        "SF Pro Rounded 폰트 로드 및 전체 앱 적용",
+        "i18n 기본 구조 세팅 (한국어 기본, 영어/일본어 전환 가능)",
+        "Zustand AuthStore, GameStore, SettingsStore 기본 구조",
+        "브라우저(expo web)에서 로비 화면 렌더링 확인"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "게임 화면: 윷판 렌더링 + 말 표시",
+      "priority": 5,
+      "passes": false,
+      "acceptanceCriteria": [
+        "react-native-skia Canvas로 전통 윷판(십자형) 렌더링",
+        "29개 노드 위치에 원형 칸 표시",
+        "외곽 경로 + 지름길 경로 라인 표시",
+        "말(Mal) 컴포넌트: 4색 기본 캐릭터 표시 (투박한 디자인)",
+        "말 위치가 BoardState에 따라 올바른 칸에 배치",
+        "브라우저에서 윷판 + 말 렌더링 확인"
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "게임 플로우: 윷 던지기 + 말 이동 + 턴 진행",
+      "priority": 6,
+      "passes": false,
+      "acceptanceCriteria": [
+        "던지기 버튼 클릭 시 서버에 throw_yut 메시지 전송",
+        "서버 응답 후 윷 결과(도/개/걸/윷/모) 화면 표시",
+        "스킬 게이지 UI: 좌우 왕복 게이지 + 탭으로 정지 (클래식/스킬 모드 전환)",
+        "이동 가능한 말 하이라이트 → 탭으로 선택 → 서버에 move_mal 전송",
+        "말 이동 애니메이션 (칸 이동)",
+        "잡기: 상대 말 위치에 도착 시 상대 말 출발점 복귀 + 추가 턴",
+        "업기: 같은 위치 내 말 합류 시 스택 표시",
+        "골인: 말이 골인 칸 도달 시 보드에서 제거",
+        "승리: 모든 말 골인 시 승리 화면 표시",
+        "Colyseus 서버와 실시간 동기화 확인 (2개 브라우저 탭에서 동시 플레이)"
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "매칭 + 방 만들기 + 1v1/2v2",
+      "priority": 7,
+      "passes": false,
+      "acceptanceCriteria": [
+        "빠른 매칭: 로비에서 1v1 또는 2v2 선택 → 서버 매칭 큐 등록 → 상대 발견 시 게임 시작",
+        "방 만들기: 6자리 코드 생성 → 코드 공유 → 코드 입력으로 참여",
+        "1v1 모드: 유저당 말 4개, 교대 턴",
+        "2v2 모드: 각자 말 2개씩, 팀당 총 4개, 1팀A→2팀A→1팀B→2팀B 교차 턴",
+        "매칭 대기 화면 + 취소 버튼",
+        "2개 이상 브라우저 탭에서 매칭 → 게임 진입 확인"
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "AI 대전 (오프라인)",
+      "priority": 8,
+      "passes": false,
+      "acceptanceCriteria": [
+        "AI 대전 선택 시 난이도(쉬움/보통/어려움) 선택 화면",
+        "쉬움: AI가 랜덤으로 말 선택",
+        "보통: AI가 잡기 우선, 업기 고려하는 휴리스틱 적용",
+        "어려움: AI가 Expectimax 기반 최적 선택",
+        "네트워크 없이 오프라인으로 게임 진행 (shared 패키지 로직 사용)",
+        "AI 턴 시 1~2초 딜레이 후 자동 행동",
+        "브라우저에서 AI 대전 1판 완료 가능"
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "말풍선 메시지 + 결과 화면 + 리더보드",
+      "priority": 9,
+      "passes": false,
+      "acceptanceCriteria": [
+        "게임 중 말풍선 4종 버튼(미안해요/잘했어요/빨리주세요/왔어요) 표시",
+        "버튼 탭 시 해당 유저 캐릭터 위에 말풍선 2초간 표시 후 페이드아웃",
+        "3초 쿨다운 적용",
+        "게임 종료 시 결과 화면(승리/패배) 표시",
+        "리더보드 화면: 글로벌 월간 승수 Top 100 목록",
+        "프로필 화면: 닉네임, 캐릭터, 전적(승/패/승률) 표시"
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "수익화 + 캐릭터 + 다국어 마무리",
+      "priority": 10,
+      "passes": false,
+      "acceptanceCriteria": [
+        "하단 배너 광고 영역 (SafeArea 하단 고정, 실제 AdMob은 목업으로 대체 가능)",
+        "설정에서 구독 상태 표시 (무료/주간/월간/평생)",
+        "구독 시 광고 영역 숨김 + 캐릭터 8종 해금 시뮬레이션",
+        "캐릭터 선택 화면: 기본 4종 + 구독자 8종 (잠금/해금 표시)",
+        "한국어/영어/일본어 전환 시 모든 UI 텍스트 변경 확인",
+        "설정에서 언어 변경 가능"
+      ]
+    }
+  ]
+}
