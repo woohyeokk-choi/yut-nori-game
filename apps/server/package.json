@@ -9,10 +9,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@colyseus/ws-transport": "^0.15.0",
-    "colyseus": "^0.15.0",
-    "express": "^4.21.0",
-    "@yut-nori/shared": "workspace:*"
+    "@colyseus/ws-transport": "0.16",
+    "@yut-nori/shared": "workspace:*",
+    "colyseus": "0.16",
+    "express": "^4.21.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

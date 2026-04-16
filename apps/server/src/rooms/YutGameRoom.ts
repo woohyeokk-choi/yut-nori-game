@@ -1,5 +1,5 @@
 import { Room, Client } from 'colyseus';
-import { GameState, PlayerSchema, MalSchema } from '../schemas/GameState';
+import { GameState, PlayerSchema, MalSchema } from '../schemas/GameState.js';
 import { 
   PathCalculator, YutProbability, WinCondition,
   YUT_EXTRA_TURN, NODE, GaugeZone,
@@ -143,7 +143,7 @@ export class YutGameRoom extends Room<GameState> {
     const mals: MalState[] = player.mals.map(m => ({
       position: m.position,
       isStacked: m.isStacked,
-      stackedWith: m.stackedWith.toArray(),
+      stackedWith: [],
     }));
 
     const moves = PathCalculator.getAvailableMoves(mals, yutResult);
@@ -248,7 +248,7 @@ export class YutGameRoom extends Room<GameState> {
           // 잡기! 상대 말을 출발점으로
           mal.position = NODE.START;
           mal.isStacked = false;
-          mal.stackedWith.clear();
+          
           // 잡기 시 추가 턴
           this.state.extraTurns++;
         }
@@ -283,7 +283,7 @@ export class YutGameRoom extends Room<GameState> {
       // 팀의 모든 말 체크
       const teamMals = this.state.players
         .filter(p => p.team === player.team)
-        .map(p => p.mals.map(m => ({ position: m.position, isStacked: m.isStacked, stackedWith: m.stackedWith.toArray() })));
+        .map(p => p.mals.map(m => ({ position: m.position, isStacked: m.isStacked, stackedWith: [] })));
       
       if (WinCondition.checkTeamWin(teamMals)) {
         this.endGame(player.team);
@@ -292,7 +292,7 @@ export class YutGameRoom extends Room<GameState> {
       const mals: MalState[] = player.mals.map(m => ({
         position: m.position,
         isStacked: m.isStacked,
-        stackedWith: m.stackedWith.toArray(),
+        stackedWith: [],
       }));
       
       if (WinCondition.checkWin(mals)) {
