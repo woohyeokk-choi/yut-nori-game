@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Board } from '../src/components/board/Board';
 import { SkillGauge } from '../src/components/board/SkillGauge';
 import { ChatBubbles } from '../src/components/board/ChatBubbles';
@@ -26,6 +26,7 @@ export default function Game() {
   const [phase, setPhase] = useState<string>('waiting');
   const [currentTurn, setCurrentTurn] = useState(0);
   const [myIndex, setMyIndex] = useState(-1);
+  const myIndexRef = useRef(-1);
   const [yutResult, setYutResult] = useState<string>('');
   const [mals, setMals] = useState<MalInfo[]>([]);
   const [turnTimer, setTurnTimer] = useState(30);
@@ -86,7 +87,8 @@ export default function Game() {
 
         const newMals: MalInfo[] = [];
         state.players?.forEach((player: any, pIdx: number) => {
-          if (player.userId === room.sessionId && myIndex === -1) {
+          if (player.userId === room.sessionId && myIndexRef.current === -1) {
+            myIndexRef.current = pIdx;
             setMyIndex(pIdx);
           }
           player.mals?.forEach((mal: any, mIdx: number) => {
@@ -102,10 +104,24 @@ export default function Game() {
         setMals(newMals);
 
         if (state.phase === 'playing') {
-          const isMe = state.currentTurn === myIndex;
+          const isMe = state.currentTurn === myIndexRef.current;
           setStatusText(isMe ? (state.yutResult ? '말을 선택하세요' : '내 차례 - 던지기!') : '상대 차례');
+
+          // 온라인: 내 턴 + 윷 결과 있으면 이동 가능 노드 하이라이트
+          if (isMe && state.yutResult) {
+            const myMals = newMals.filter((m: MalInfo) => m.playerIndex === myIndexRef.current);
+            const malStates: MalState[] = myMals.map((m: MalInfo) => ({ position: m.position, isStacked: m.isStacked, stackedWith: [] }));
+            const moves = PathCalculator.getAvailableMoves(malStates, state.yutResult as YutResult);
+            const highlights = moves.map(m => m.targetPosition === NODE.FINISH ? 0 : m.targetPosition).filter((p: number) => p >= 0);
+            setHighlightedNodes([...new Set(highlights)] as number[]);
+            setAvailableMoves(moves.map(m => ({ malIndex: m.malIndex, target: m.targetPosition, shortcut: m.canTakeShortcut })));
+          } else {
+            setHighlightedNodes([]);
+            setAvailableMoves([]);
+          }
         } else if (state.phase === 'finished') {
           setStatusText(state.winnerId === room.sessionId ? '승리!' : '패배');
+          setHighlightedNodes([]);
         }
       });
     } catch (e) {
