@@ -80,6 +80,8 @@ export function SkillGauge({ mode, onThrow, disabled }: SkillGaugeProps) {
         </View>
       )}
       <Pressable
+        testID="throw-button"
+        accessibilityRole="button"
         style={[styles.throwButton, disabled && styles.throwButtonDisabled]}
         onPress={handleThrow}
         disabled={disabled}
