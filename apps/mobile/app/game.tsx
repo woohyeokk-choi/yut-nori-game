@@ -18,7 +18,7 @@ interface MalInfo {
 }
 
 export default function Game() {
-  const { mode } = useLocalSearchParams<{ mode: string }>();
+  const { mode, gameMode: gameModeParam } = useLocalSearchParams<{ mode: string; gameMode?: string }>();
   const router = useRouter();
   const gaugeMode = useSettingsStore((s) => s.gaugeMode);
 
@@ -70,7 +70,8 @@ export default function Game() {
 
   const connectToServer = async () => {
     try {
-      const room = await gameClient.joinOrCreate('1v1', gaugeMode);
+      const gm = (gameModeParam === '2v2' ? '2v2' : '1v1') as '1v1' | '2v2';
+      const room = await gameClient.joinOrCreate(gm, gaugeMode);
       setConnected(true);
       setStatusText('상대 대기 중...');
 
