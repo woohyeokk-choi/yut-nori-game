@@ -35,7 +35,8 @@ export function Board({ mals, highlightedPositions = [], onNodePress }: BoardPro
     const allEdges = [...OUTER_PATH, ...SHORTCUT_5_TO_15, ...SHORTCUT_10_TO_FINISH];
     return allEdges.map((edge, i) => {
       const from = positions.get(edge.from);
-      const to = positions.get(edge.to);
+      // FINISH(30) → 출발점(0)으로 시각적 연결
+      const to = edge.to === 30 ? positions.get(0) : positions.get(edge.to);
       if (!from || !to) return null;
       const f = toScreen(from.x, from.y);
       const t = toScreen(to.x, to.y);

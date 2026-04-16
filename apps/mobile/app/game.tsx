@@ -126,8 +126,9 @@ export default function Game() {
       const myMals = mals.filter(m => m.playerIndex === currentTurn);
       const malStates: MalState[] = myMals.map(m => ({ position: m.position, isStacked: m.isStacked, stackedWith: [] }));
       const moves = PathCalculator.getAvailableMoves(malStates, result);
-      const highlights = moves.map(m => m.targetPosition).filter(p => p >= 0 && p < 30);
-      setHighlightedNodes(highlights);
+      // FINISH(30)은 출발점(0) 위치에 하이라이트로 표시
+      const highlights = moves.map(m => m.targetPosition === NODE.FINISH ? 0 : m.targetPosition).filter(p => p >= 0);
+      setHighlightedNodes([...new Set(highlights)]);
       setAvailableMoves(moves.map(m => ({ malIndex: m.malIndex, target: m.targetPosition, shortcut: m.canTakeShortcut })));
     } else {
       gameClient.throwYut(gaugeZone);
@@ -139,22 +140,28 @@ export default function Game() {
     if (!needsMove && !isAI) return;
 
     if (isAI) {
-      const move = availableMoves.find(m => m.target === nodeId);
+      // nodeId=0일 때 FINISH 타겟인 move도 매칭
+      const move = availableMoves.find(m => m.target === nodeId)
+        ?? availableMoves.find(m => m.target === NODE.FINISH && nodeId === 0);
       if (!move) return;
+
+      const actualTarget = move.target; // FINISH(30) 또는 실제 노드
 
       setMals(prev => {
         const updated = [...prev];
         const mal = updated.find(m => m.playerIndex === currentTurn && m.malIndex === move.malIndex);
         if (!mal) return prev;
 
-        // 잡기 체크
-        updated.forEach(m => {
-          if (m.team !== currentTurn && m.position === nodeId && m.position >= 0) {
-            m.position = NODE.START;
-          }
-        });
+        // 잡기 체크 (골인이 아닐 때만)
+        if (actualTarget !== NODE.FINISH) {
+          updated.forEach(m => {
+            if (m.team !== currentTurn && m.position === actualTarget && m.position >= 0) {
+              m.position = NODE.START;
+            }
+          });
+        }
 
-        mal.position = nodeId;
+        mal.position = actualTarget;
         return [...updated];
       });
 
@@ -162,26 +169,30 @@ export default function Game() {
       setHighlightedNodes([]);
       setAvailableMoves([]);
 
-      // 승리 체크
-      const myMals = mals.filter(m => m.playerIndex === currentTurn);
-      const allFinished = myMals.every(m => m.position === NODE.FINISH || m.position === nodeId && nodeId === NODE.FINISH);
-      
-      if (allFinished) {
-        setPhase('finished');
-        setWinnerId(currentTurn === 0 ? 'player' : 'ai');
-        setStatusText(currentTurn === 0 ? '승리!' : '패배');
-        return;
-      }
+      // 승리 체크 (업데이트 후 상태로 체크)
+      setTimeout(() => {
+        setMals(current => {
+          const myMals = current.filter(m => m.playerIndex === currentTurn);
+          const allFinished = myMals.every(m => m.position === NODE.FINISH);
 
-      // AI 턴
-      if (currentTurn === 0) {
-        setCurrentTurn(1);
-        setStatusText('AI 차례...');
-        setTimeout(() => doAITurn(), 1500);
-      } else {
-        setCurrentTurn(0);
-        setStatusText('내 차례 - 던지기!');
-      }
+          if (allFinished) {
+            setPhase('finished');
+            setWinnerId(currentTurn === 0 ? 'player' : 'ai');
+            setStatusText(currentTurn === 0 ? '승리!' : '패배');
+          } else {
+            // AI 턴
+            if (currentTurn === 0) {
+              setCurrentTurn(1);
+              setStatusText('AI 차례...');
+              setTimeout(() => doAITurn(), 1500);
+            } else {
+              setCurrentTurn(0);
+              setStatusText('내 차례 - 던지기!');
+            }
+          }
+          return current;
+        });
+      }, 100);
     } else {
       // 온라인: 서버에 말 이동 전송
       const myMals = mals.filter(m => m.playerIndex === myIndex);
