@@ -219,56 +219,90 @@ export class YutGameRoom extends Room<GameState> {
   private executeMalMove(playerIdx: number, malIndex: number, destination: number, path: number[]) {
     const player = this.state.players[playerIdx];
     const mal = player.mals[malIndex];
+    const fromPosition = mal.position;
 
-    // 잡기 체크
+    // 잡기 체크 (도착지에 상대 말이 있으면 전부 잡기)
+    let caught = false;
     if (destination !== NODE.FINISH && destination !== NODE.START) {
-      this.checkCatch(playerIdx, destination);
+      caught = this.checkCatch(playerIdx, destination);
     }
+
+    // 업힌 말도 함께 이동 (같은 팀, 같은 위치의 모든 말)
+    this.moveStackedMals(playerIdx, fromPosition, destination);
 
     // 말 이동
     mal.position = destination;
 
-    // 업기 체크 (같은 팀 말이 같은 위치에 있으면)
+    // 골인 시 isStacked 해제
+    if (destination === NODE.FINISH) {
+      mal.isStacked = false;
+    }
+
+    // 업기 체크 (도착지에 같은 팀 말이 있으면 업기)
     if (destination !== NODE.FINISH && destination !== NODE.START) {
       this.checkStack(playerIdx, malIndex, destination);
+    }
+
+    // 잡기 성공 시 추가 턴
+    if (caught) {
+      this.state.extraTurns++;
     }
 
     // 승리 체크
     this.checkWin(playerIdx);
   }
 
-  private checkCatch(currentPlayerIdx: number, position: number) {
-    const currentTeam = this.state.players[currentPlayerIdx].team;
+  // 업힌 말(같은 팀, 같은 위치)을 함께 이동
+  private moveStackedMals(playerIdx: number, fromPosition: number, destination: number) {
+    if (fromPosition === NODE.START || fromPosition === NODE.FINISH) return;
+    const team = this.state.players[playerIdx].team;
 
-    for (let i = 0; i < this.state.players.length; i++) {
-      if (this.state.players[i].team === currentTeam) continue;
-
-      for (const mal of this.state.players[i].mals) {
-        if (mal.position === position) {
-          // 잡기! 상대 말을 출발점으로
-          mal.position = NODE.START;
-          mal.isStacked = false;
-          
-          // 잡기 시 추가 턴
-          this.state.extraTurns++;
+    for (let p = 0; p < this.state.players.length; p++) {
+      if (this.state.players[p].team !== team) continue;
+      for (const mal of this.state.players[p].mals) {
+        if (mal.position === fromPosition && mal.isStacked) {
+          mal.position = destination;
+          if (destination === NODE.FINISH) {
+            mal.isStacked = false;
+          }
         }
       }
     }
   }
 
+  private checkCatch(currentPlayerIdx: number, position: number): boolean {
+    const currentTeam = this.state.players[currentPlayerIdx].team;
+    let caught = false;
+
+    for (let i = 0; i < this.state.players.length; i++) {
+      if (this.state.players[i].team === currentTeam) continue;
+
+      for (const mal of this.state.players[i].mals) {
+        if (mal.position === position && mal.position !== NODE.START && mal.position !== NODE.FINISH) {
+          // 잡기! 상대 말을 출발점으로 (업힌 말 전부 잡힘)
+          mal.position = NODE.START;
+          mal.isStacked = false;
+          caught = true;
+        }
+      }
+    }
+    return caught;
+  }
+
   private checkStack(playerIdx: number, malIndex: number, position: number) {
     const player = this.state.players[playerIdx];
-    
-    // 같은 팀의 다른 말이 같은 위치에 있는지 확인
+    const team = player.team;
+
+    // 같은 팀의 다른 말이 같은 위치에 있는지 확인 (팀원 포함)
     for (let p = 0; p < this.state.players.length; p++) {
-      if (this.state.players[p].team !== player.team) continue;
+      if (this.state.players[p].team !== team) continue;
 
       for (let m = 0; m < this.state.players[p].mals.length; m++) {
         if (p === playerIdx && m === malIndex) continue;
         const otherMal = this.state.players[p].mals[m];
-        
+
         if (otherMal.position === position) {
-          // 업기
+          // 업기 (자기 말 + 팀원 말 모두)
           otherMal.isStacked = true;
           player.mals[malIndex].isStacked = true;
         }
