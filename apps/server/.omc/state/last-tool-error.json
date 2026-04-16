@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"curl -s http://localhost:2567/ 2>&1 && curl -s -o /dev/null -w \\\"%{http_code}\\\" http://localhost:8081/ 2>&1\",\"description\":\"Check if servers are still running\"}",
-  "error": "Exit code 7",
-  "timestamp": "2026-04-16T02:10:23.836Z",
-  "retry_count": 4
+  "tool_input_preview": "{\"command\":\"kill $(lsof -ti:8081) $(lsof -ti:2567) 2>/dev/null\\n# Expo 재시작\\ncd /Users/delightroom/Programming/yut-nori-game/apps/mobile && nohup npx expo start --web --port 8081 > /tmp/expo.log 2>&1 &...",
+  "error": "Exit code 7\nexpo:200 server:000",
+  "timestamp": "2026-04-16T04:56:49.728Z",
+  "retry_count": 1
 }

@@ -306,7 +306,7 @@ export default function Game() {
           <Text style={styles.resultText}>
             {winnerId === 'player' || (myIndex >= 0 && winnerId) ? '🎉 승리!' : '😔 패배'}
           </Text>
-          <Pressable style={styles.backToLobby} onPress={() => router.back()}>
+          <Pressable testID="back-to-lobby" accessibilityRole="button" style={styles.backToLobby} onPress={() => { gameClient.leave(); router.replace('/'); }}>
             <Text style={styles.backToLobbyText}>로비로 돌아가기</Text>
           </Pressable>
         </View>
