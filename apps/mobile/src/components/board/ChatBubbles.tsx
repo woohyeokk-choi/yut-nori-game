@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, Text, StyleSheet, Animated } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  withSequence,
+} from 'react-native-reanimated';
 import { t } from '../../i18n';
 
 interface ChatBubblesProps {
@@ -13,17 +20,20 @@ const COOLDOWN = 3000;
 
 export function ChatBubbles({ onSend, lastMessage, disabled }: ChatBubblesProps) {
   const [cooldown, setCooldown] = useState(false);
-  const [bubbleOpacity] = useState(new Animated.Value(0));
+  const bubbleOpacity = useSharedValue(0);
   const [bubbleText, setBubbleText] = useState('');
+
+  const bubbleStyle = useAnimatedStyle(() => ({
+    opacity: bubbleOpacity.value,
+  }));
 
   useEffect(() => {
     if (lastMessage) {
       setBubbleText(lastMessage.text);
-      Animated.sequence([
-        Animated.timing(bubbleOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-        Animated.delay(1800),
-        Animated.timing(bubbleOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
-      ]).start();
+      bubbleOpacity.value = withSequence(
+        withTiming(1, { duration: 200 }),
+        withDelay(1800, withTiming(0, { duration: 300 }))
+      );
     }
   }, [lastMessage?.timestamp]);
 
@@ -38,7 +48,7 @@ export function ChatBubbles({ onSend, lastMessage, disabled }: ChatBubblesProps)
   return (
     <View style={styles.container}>
       {bubbleText ? (
-        <Animated.View style={[styles.bubble, { opacity: bubbleOpacity }]}>
+        <Animated.View style={[styles.bubble, bubbleStyle]}>
           <Text style={styles.bubbleText}>{bubbleText}</Text>
         </Animated.View>
       ) : null}

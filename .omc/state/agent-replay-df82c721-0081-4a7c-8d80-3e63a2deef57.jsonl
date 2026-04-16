@@ -21,3 +21,6 @@
 {"t":0,"agent":"system","event":"keyword_detected","keyword":"ultrawork"}
 {"t":0,"agent":"system","event":"mode_change","mode_from":"none","mode_to":"ultrawork"}
 {"t":0,"agent":"a25c8d1","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"ab12566","agent_type":"unknown","event":"agent_stop","success":true}
+{"t":0,"agent":"system","event":"keyword_detected","keyword":"ralph"}
+{"t":0,"agent":"system","event":"mode_change","mode_from":"none","mode_to":"ralph"}

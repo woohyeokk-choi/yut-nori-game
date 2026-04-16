@@ -1,0 +1,12 @@
+{
+  "active": true,
+  "iteration": 1,
+  "max_iterations": 100,
+  "started_at": "2026-04-16T11:06:27.160Z",
+  "prompt": "/ralph  docs/MIGRATION_PLAN.md gogo",
+  "session_id": "df82c721-0081-4a7c-8d80-3e63a2deef57",
+  "project_path": "/Users/delightroom/Programming/yut-nori-game",
+  "linked_ultrawork": true,
+  "awaiting_confirmation": true,
+  "last_checked_at": "2026-04-16T11:06:27.160Z"
+}

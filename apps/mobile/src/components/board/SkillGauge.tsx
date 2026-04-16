@@ -1,5 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Animated } from 'react-native';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  cancelAnimation,
+  useAnimatedReaction,
+  runOnJS,
+  Easing,
+} from 'react-native-reanimated';
 import { YutProbability, type GaugeZone } from '@yut-nori/shared';
 
 interface SkillGaugeProps {
@@ -9,36 +20,41 @@ interface SkillGaugeProps {
 }
 
 export function SkillGauge({ mode, onThrow, disabled }: SkillGaugeProps) {
-  const animValue = useRef(new Animated.Value(0)).current;
-  const animRef = useRef<Animated.CompositeAnimation | null>(null);
+  const gaugeValue = useSharedValue(0);
   const [gaugePosition, setGaugePosition] = useState(0);
+  const isRunning = useRef(false);
+
+  // SharedValue → JS state 동기화 (zone 계산용)
+  const updatePosition = useCallback((v: number) => setGaugePosition(v), []);
+  useAnimatedReaction(
+    () => gaugeValue.value,
+    (v) => runOnJS(updatePosition)(v),
+    [gaugeValue]
+  );
 
   useEffect(() => {
     if (mode === 'skill' && !disabled) {
-      const animation = Animated.loop(
-        Animated.sequence([
-          Animated.timing(animValue, { toValue: 1, duration: 875, useNativeDriver: false }),
-          Animated.timing(animValue, { toValue: 0, duration: 875, useNativeDriver: false }),
-        ])
+      gaugeValue.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 875, easing: Easing.linear }),
+          withTiming(0, { duration: 875, easing: Easing.linear })
+        ),
+        -1 // 무한 반복
       );
-      animRef.current = animation;
-      animation.start();
-
-      const listener = animValue.addListener(({ value }) => setGaugePosition(value));
+      isRunning.current = true;
       return () => {
-        animation.stop();
-        animValue.removeListener(listener);
+        cancelAnimation(gaugeValue);
+        isRunning.current = false;
       };
     }
   }, [mode, disabled]);
 
   const handleThrow = () => {
     if (disabled) return;
-    
     if (mode === 'classic') {
       onThrow('normal');
     } else {
-      animRef.current?.stop();
+      cancelAnimation(gaugeValue);
       const zone = YutProbability.calculateGaugeZone(gaugePosition);
       onThrow(zone);
     }
@@ -54,6 +70,10 @@ export function SkillGauge({ mode, onThrow, disabled }: SkillGaugeProps) {
     }
   };
 
+  const indicatorStyle = useAnimatedStyle(() => ({
+    left: `${gaugeValue.value * 96}%` as any,
+  }));
+
   return (
     <View style={styles.container}>
       {mode === 'skill' && (
@@ -68,13 +88,8 @@ export function SkillGauge({ mode, onThrow, disabled }: SkillGaugeProps) {
           <Animated.View
             style={[
               styles.gaugeIndicator,
-              {
-                left: animValue.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0%', '96%'],
-                }),
-                backgroundColor: getZoneColor(gaugePosition),
-              },
+              indicatorStyle,
+              { backgroundColor: getZoneColor(gaugePosition) },
             ]}
           />
         </View>
