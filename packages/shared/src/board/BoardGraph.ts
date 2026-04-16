@@ -85,14 +85,7 @@ export function getNodePositions(): Map<number, { x: number; y: number }> {
   // 하단 변: 0(우하)→4→3→2→1→(중간 생략) 실제로는:
   // 0=우하, 5=우상, 10=좌상, 15=좌하
   
-  const s = 1.0; // 보드 크기
-  
-  // 하단 변 (0→1→2→3→4→5: 우하→우상)
-  for (let i = 0; i <= 5; i++) {
-    positions.set(i, { x: s - (i * s / 5) * 0, y: s });
-  }
-  
-  // 단순화된 정사각형 좌표계
+  // 정사각형 좌표계 (0~1 정규화)
   // 0=우하(1,1), 5=우상(1,0), 10=좌상(0,0), 15=좌하(0,1)
   const corners = [
     { id: 0, x: 1.0, y: 1.0 },   // 우하 (출발/골인)
@@ -101,7 +94,7 @@ export function getNodePositions(): Map<number, { x: number; y: number }> {
     { id: 15, x: 0.0, y: 1.0 },  // 좌하
   ];
 
-  // 각 변의 5칸을 보간
+  // 외곽 각 변의 5칸을 보간
   for (let side = 0; side < 4; side++) {
     const from = corners[side];
     const to = corners[(side + 1) % 4];
@@ -115,16 +108,16 @@ export function getNodePositions(): Map<number, { x: number; y: number }> {
     }
   }
 
-  // 지름길 노드
-  positions.set(20, { x: 0.8, y: 0.8 });   // 5→22 경로 위
-  positions.set(21, { x: 0.65, y: 0.65 });
-  positions.set(22, { x: 0.5, y: 0.5 });    // 중앙
-  positions.set(23, { x: 0.35, y: 0.35 });  // 10→22 경로 위
-  positions.set(24, { x: 0.2, y: 0.2 });
-  positions.set(25, { x: 0.35, y: 0.65 });  // 22→15 경로 위
-  positions.set(26, { x: 0.2, y: 0.8 });
-  positions.set(27, { x: 0.65, y: 0.35 });  // 22→골인 경로 위
-  positions.set(28, { x: 0.8, y: 0.2 });
+  // 지름길 노드 (실제 경로에 사용되는 노드만)
+  // 경로: 5(1,0)→21→22(0.5,0.5)→26→15(0,1) (우상→중앙→좌하)
+  positions.set(21, { x: 0.75, y: 0.25 });  // 5→22 중간
+  positions.set(22, { x: 0.5, y: 0.5 });    // 중앙 ★
+  positions.set(26, { x: 0.25, y: 0.75 });  // 22→15 중간
+
+  // 경로: 10(0,0)→23→22(0.5,0.5)→27→28→FINISH (좌상→중앙→우하)
+  positions.set(23, { x: 0.25, y: 0.25 });  // 10→22 중간
+  positions.set(27, { x: 0.67, y: 0.67 });  // 22→0(골인) 1/3
+  positions.set(28, { x: 0.83, y: 0.83 });  // 22→0(골인) 2/3
 
   return positions;
 }
